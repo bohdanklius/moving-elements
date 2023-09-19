@@ -8,57 +8,69 @@
         body {
             display: flex;
             flex-wrap: wrap;
-            justify-content: flex-start;
+            align-content: flex-start;
             gap: 10px;
+            height: 100vh;
         }
 
-        div {
+        .block {
             width: 100px;
             height: 100px;
+            text-align: center;
+            line-height: 100px;
             border: 1px solid #000;
             border-radius: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             cursor: pointer;
-            transition: all 0.5s ease;
+            transition: 0.5s;
         }
 
-        div:hover {
+        .block:hover {
             background-color: aqua;
         }
 
-        .moved {
+        .selected {
             color: red;
         }
     </style>
 </head>
 <body>
     <script>
-        const elementCount = 100;
-        const body = document.body;
+        document.addEventListener('DOMContentLoaded', function () {
+            const body = document.body;
+            const blockCount = 100;
+            const initialOrder = [];
 
-        function createelements() {
-            for (let i = 1; i <= elementCount; i++) {
-                const div = document.createElement('div');
-                div.textContent = 'div' + i;
-                body.appendChild(div);
-                div.addEventListener('click', togglePosition);
+            function moveToTop(block) {
+                body.removeChild(block);
+                body.insertBefore(block, body.firstChild);
             }
-        }
 
-        function togglePosition(event) {
-            const div = event.target;
-            if (div.style.order === '') {
-                div.style.order = -1;
-                div.classList.add('moved');
-            } else {
-                div.style.order = '';
-                div.classList.remove('moved');
+            function handleClick(event) {
+                const block = event.target;
+                if (block.classList.contains('selected')) {
+                    block.classList.remove('selected');
+                    const index = initialOrder.indexOf(block);
+                    if (index !== -1) {
+                        const referenceBlock = initialOrder[index + 1];
+                        body.insertBefore(block, referenceBlock);
+                    } else {
+                        body.appendChild(block);
+                    }
+                } else {
+                    block.classList.add('selected');
+                    moveToTop(block);
+                }
             }
-        }
 
-        createelements();
+            for (let i = 1; i <= blockCount; i++) {
+                const block = document.createElement('div');
+                block.className = 'block';
+                block.textContent = `div${i}`;
+                block.addEventListener('click', handleClick);
+                body.appendChild(block);
+                initialOrder.push(block);
+            }
+        });
     </script>
 </body>
 </html>
